@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Letter Matrix</title>
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+
+<body>
+  <main class="container">
+    <header class="page-header">
+      <h1>Letter generator</h1>
+      <p class="lead">
+        Please fill in your full name and email to receive your personalised PDF letter.
+      </p>
+    </header>
+
+    <form id="matrix-form" novalidate>
+      <fieldset>
+        <legend>Recipient</legend>
+        <label class="field">
+          <span>Name</span>
+          <input type="text" id="name" name="name" placeholder="Player One" required />
+        </label>
+        <label class="field email-field">
+          <span>Email user ID</span>
+          <div class="email-input">
+            <input type="text" id="emailUserId" name="emailUserId" placeholder="player.one" pattern="[a-z0-9._%+-]+"
+              required />
+            <span class="suffix">@tinkertanker.com</span>
+          </div>
+        </label>
+      </fieldset>
+
+      <div class="form-actions">
+        <button type="submit" id="submit-btn">Generate PDF</button>
+      </div>
+    </form>
+
+    <section id="status" role="status" aria-live="polite"></section>
+  </main>
+
+  <script src="./main.js" type="module"></script>
+</body>
+
+</html>
