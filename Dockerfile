@@ -47,10 +47,6 @@ COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/public ./public
 COPY --from=builder /app/package.json ./package.json
 
-# Copy entrypoint script
-COPY docker-entrypoint.sh /app/docker-entrypoint.sh
-RUN chmod +x /app/docker-entrypoint.sh
-
 # Create temp directory for PDF generation
 RUN mkdir -p /app/tmp
 RUN chown -R appuser:nodejs /app
@@ -60,6 +56,5 @@ RUN chmod -R 777 /app/tmp
 # Switch to non-root user
 USER appuser
 
-# Set entrypoint and command
-ENTRYPOINT ["/app/docker-entrypoint.sh"]
+# Start the application
 CMD ["node", "dist/server.js"]
