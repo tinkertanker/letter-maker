@@ -195,6 +195,14 @@ body {
   display: block;
 }
 
+.status-spinner {
+  display: none;
+}
+
+.status.show-spinner .status-spinner {
+  display: inline-block;
+}
+
 .status::part(base) {
   border-radius: 8px;
   font-weight: 500;

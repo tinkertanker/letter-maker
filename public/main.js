@@ -3,7 +3,7 @@ const statusEl = document.getElementById("status");
 const submitBtn = document.getElementById("submit-btn");
 const nameInput = document.getElementById("name");
 const emailUserIdInput = document.getElementById("emailUserId");
-const statusSpinner = document.getElementById("status-spinner");
+const statusMessage = document.getElementById("status-message");
 
 const statusVariants = {
   info: "primary",
@@ -12,25 +12,25 @@ const statusVariants = {
 };
 
 function showStatus(message, tone = "info", showSpinner = false) {
-  if (!statusEl) return;
+  if (!statusEl || !statusMessage) return;
   statusEl.variant = statusVariants[tone] ?? "neutral";
-  statusEl.textContent = message;
+  statusMessage.textContent = message;
   statusEl.open = true;
 
-  // Show or hide spinner
-  if (statusSpinner) {
-    statusSpinner.style.display = showSpinner ? "block" : "none";
+  // Show or hide spinner by adding/removing class
+  if (showSpinner) {
+    statusEl.classList.add("show-spinner");
+  } else {
+    statusEl.classList.remove("show-spinner");
   }
 }
 
 function clearStatus() {
-  if (!statusEl) return;
+  if (!statusEl || !statusMessage) return;
   statusEl.open = false;
-  statusEl.textContent = "";
+  statusMessage.textContent = "";
   statusEl.variant = "neutral";
-  if (statusSpinner) {
-    statusSpinner.style.display = "none";
-  }
+  statusEl.classList.remove("show-spinner");
 }
 
 function toggleLoading(isLoading) {
