@@ -128,10 +128,16 @@ body {
   background: transparent;
 }
 
+.form-grid sl-input::part(input)::placeholder {
+  color: #6b6b6b;
+  opacity: 1;
+}
+
 .form-grid sl-input::part(suffix) {
   color: var(--text-secondary);
   font-weight: 500;
   font-size: 0.95rem;
+  padding-right: 8px;
 }
 
 .form-grid sl-input::part(help-text) {

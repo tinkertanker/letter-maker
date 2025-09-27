@@ -5,7 +5,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Letter Maker</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.16.0/cdn/themes/dark.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.16.0/cdn/themes/light.css" />
   <link rel="stylesheet"
     href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" />
   <link rel="stylesheet" href="./styles.css" />
@@ -17,15 +17,15 @@
   <main class="layout">
     <sl-card class="form-card">
       <div slot="header" class="card-header">
-        <h1><span>Figma</span> Letter Generator</h1>
+        <h1>Figma letter generator</h1>
         <p>Provide your full name (what you'll enter into <a href="https://www.figma.com/education/apply">the
             application page</a>) and tinkertanker.com email so we can send your personalised PDF letter.</p>
       </div>
 
       <form id="letter-form" class="form-grid" novalidate>
-        <sl-input id="name" name="name" label="Full name" placeholder="Jamie Tan" autocomplete="name"
+        <sl-input id="name" name="name" label="Full name" placeholder="Lim Ah Beng" autocomplete="name"
           required></sl-input>
-        <sl-input id="emailUserId" name="emailUserId" label="Email user ID" placeholder="jamie.tan"
+        <sl-input id="emailUserId" name="emailUserId" label="Email user ID" placeholder="lim_ah_beng"
           pattern="[a-z0-9._%+-]+" autocapitalize="none" autocorrect="off" required>
           <span slot="suffix">@tinkertanker.com</span>
         </sl-input>
