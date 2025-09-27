@@ -13,16 +13,23 @@ Create a `.env` file with the following variables:
 ```env
 # Resend API for sending emails
 RESEND_API_KEY=your_resend_api_key
-
-# Google Service Account for Google Docs access (base64 encoded)
-GOOGLE_SERVICE_ACCOUNT_JSON_BASE64=your_base64_encoded_json
-
-# Template configuration
-TEMPLATE_DOC_ID=your_google_doc_template_id
-TEMPLATE_TITLE=Figma Education Verification
-
-# Email configuration
 EMAIL_FROM=Letter Maker <letters@tinkertanker.com>
+
+# Google Docs template configuration
+GOOGLE_TEMPLATE_DOCUMENT_ID=your_template_doc_id
+
+# Google Service Account credentials (choose one option):
+
+# Option A: Use inline credentials (recommended for Docker)
+GOOGLE_CLIENT_EMAIL=your-service-account@project.iam.gserviceaccount.com
+GOOGLE_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\n...\n-----END PRIVATE KEY-----"
+GOOGLE_PROJECT_ID=your-project-id
+
+# Option B: Mount a JSON key file (requires volume mount)
+# GOOGLE_APPLICATION_CREDENTIALS=/app/service-credentials.json
+# And add volume mount in docker-compose.yml:
+# volumes:
+#   - ./service-credentials.json:/app/service-credentials.json:ro
 ```
 
 ## Deployment Steps
