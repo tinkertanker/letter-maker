@@ -104,8 +104,8 @@ app.post('/api/generate', async (req, res, next) => {
     const subjectLine = title ? `Your ${title} PDF` : 'Your generated PDF';
     const htmlBody = `
       <p>Hello ${validatedName},</p>
-      <p>Your personalised PDF letter is ready. It is attached to this email.</p>
-      <p>Best regards,<br />Letter Maker</p>
+      <p>Your personalised PDF letter is ready. It is attached to this email. If there are any issues, please feel free to regenerate, or reach out to us.</p>
+      <p>Best regards,<br />Tinkercademy Letter Maker</p>
     `;
 
     await resend.emails.send({
