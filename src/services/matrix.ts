@@ -98,10 +98,9 @@ function getGoogleClients(): { docs: docs_v1.Docs; drive: drive_v3.Drive } {
 }
 
 function generateDocumentName(title?: string, data?: Record<string, unknown>): string {
-  const fallback = data && typeof data.name === 'string' && data.name.trim()
-    ? data.name.trim()
-    : `generated-${randomUUID()}`;
-  return title?.trim() || fallback;
+  const providedName = data && typeof data.name === 'string' ? data.name.trim() : '';
+  const baseName = providedName || title?.trim() || `generated-${randomUUID()}`;
+  return `Generated - ${baseName}`;
 }
 
 function buildReplacementRequests(data: Record<string, unknown>): docs_v1.Schema$Request[] {

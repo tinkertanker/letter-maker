@@ -1,0 +1,14 @@
+{
+  "watch": [
+    "src",
+    "public"
+  ],
+  "ext": "ts,js,json",
+  "ignore": [
+    "dist"
+  ],
+  "exec": "tsx src/server.ts",
+  "env": {
+    "NODE_ENV": "development"
+  }
+}

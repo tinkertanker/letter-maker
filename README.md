@@ -1,4 +1,4 @@
-# Letter Matrix Portal
+# Letter Maker Portal
 
 A lightweight Express + TypeScript service that merges submitted data into a Google Docs template, exports the result as PDF, and emails it back to the requester.
 
@@ -12,13 +12,14 @@ A lightweight Express + TypeScript service that merges submitted data into a Goo
    - Create or pick a Google Cloud project.
    - Enable the **Google Docs API** and **Google Drive API** for that project.
    - Create a **service account** and generate a JSON key. Keep the key safe.
+   - Save the downloaded JSON as `service-credentials.json` in the project root (this file is ignored by git).
    - Share your Google Docs template with the service account email, granting at least Editor access.
 3. **Configure environment variables**
    - Duplicate `.env.example` (or create `.env`) and supply:
      - `RESEND_API_KEY` – API key from [Resend](https://resend.com/) for email delivery.
      - `EMAIL_FROM` – Verified sender address (e.g. `figmaletter@tinkertanker.com`).
      - `GOOGLE_TEMPLATE_DOCUMENT_ID` – The ID portion from your template’s Google Docs URL.
-     - Either set `GOOGLE_APPLICATION_CREDENTIALS` to the JSON key path **or** provide all of:
+     - Either set `GOOGLE_APPLICATION_CREDENTIALS` (defaults to `service-credentials.json`) to the JSON key path **or** provide all of:
        - `GOOGLE_CLIENT_EMAIL`
        - `GOOGLE_PRIVATE_KEY` (replace literal `\n` with real new lines)
        - `GOOGLE_PROJECT_ID` (optional but recommended)
@@ -30,7 +31,7 @@ A lightweight Express + TypeScript service that merges submitted data into a Goo
    ```bash
    npm run dev
    ```
-   The app listens on [http://localhost:3000](http://localhost:3000) by default.
+   This uses Nodemon, so the server restarts automatically when files in `src/` or `public/` change. The app listens on [http://localhost:3000](http://localhost:3000) by default.
 5. **Generate a PDF**
    - Open the portal in your browser.
    - Provide the recipient’s name and email user ID (everything before `@tinkertanker.com`).
@@ -75,4 +76,4 @@ letter-maker/
 └── README.md
 ```
 
-Ho say bo? Once the variables are in place, the portal lets Google Docs handle the gnarly DOCX rendering while we just deliver the polished PDF.
+Once the variables are in place, the portal lets Google Docs handle the gnarly DOCX rendering while we deliver the polished PDF.
