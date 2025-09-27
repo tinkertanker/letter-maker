@@ -99,7 +99,12 @@ function getGoogleClients(): { docs: docs_v1.Docs; drive: drive_v3.Drive } {
 
 function generateDocumentName(title?: string, data?: Record<string, unknown>): string {
   const providedName = data && typeof data.name === 'string' ? data.name.trim() : '';
+  const providedEmail = data && typeof data.email === 'string' ? data.email.trim() : '';
   const baseName = providedName || title?.trim() || `generated-${randomUUID()}`;
+
+  if (providedEmail) {
+    return `Generated - ${baseName} - ${providedEmail}`;
+  }
   return `Generated - ${baseName}`;
 }
 
