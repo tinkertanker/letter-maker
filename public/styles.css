@@ -210,13 +210,13 @@ body {
   padding: 16px 20px;
   animation: slideIn 0.3s ease;
   background: #0a0a0a;
-  border-color: var(--dark-border);
+  border: 1px solid var(--dark-border);
   color: var(--text-primary);
 }
 
 .status[variant="primary"]::part(base) {
   background: rgba(255, 107, 107, 0.1);
-  border-color: var(--coral);
+  border: 1px solid var(--coral);
   color: var(--coral-light);
   padding: 16px 20px;
 }
