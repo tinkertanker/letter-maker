@@ -17,20 +17,14 @@ EMAIL_FROM=Letter Maker <letters@tinkertanker.com>
 
 # Google Docs template configuration
 GOOGLE_TEMPLATE_DOCUMENT_ID=your_template_doc_id
-
-# Google Service Account credentials (choose one option):
-
-# Option A: Use inline credentials (recommended for Docker)
-GOOGLE_CLIENT_EMAIL=your-service-account@project.iam.gserviceaccount.com
-GOOGLE_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\n...\n-----END PRIVATE KEY-----"
-GOOGLE_PROJECT_ID=your-project-id
-
-# Option B: Mount a JSON key file (requires volume mount)
-# GOOGLE_APPLICATION_CREDENTIALS=/app/service-credentials.json
-# And add volume mount in docker-compose.yml:
-# volumes:
-#   - ./service-credentials.json:/app/service-credentials.json:ro
 ```
+
+## Google Service Account
+
+Place your `service-credentials.json` file in the project root directory.
+This file will be mounted into the Docker container automatically.
+
+The `GOOGLE_APPLICATION_CREDENTIALS` environment variable is already configured in docker-compose.yml to point to `/app/service-credentials.json`.
 
 ## Deployment Steps
 

@@ -12,7 +12,10 @@ services:
       NODE_ENV: production
       LETSENCRYPT_HOST: lettermaker.tk.sg # for SSL certificate
       LETSENCRYPT_EMAIL: yjsoon@tinkertanker.com # for SSL notifications
+      GOOGLE_APPLICATION_CREDENTIALS: /app/service-credentials.json # path to mounted JSON file
     volumes:
+      # Mount the service account JSON file
+      - ./service-credentials.json:/app/service-credentials.json:ro
       # Persist data if needed
       - ./data/tmp:/app/tmp
     networks:
