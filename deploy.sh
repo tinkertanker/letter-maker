@@ -11,14 +11,14 @@ git pull origin main
 
 # Build and restart containers
 echo "🐳 Building Docker image..."
-docker-compose build
+docker compose build
 
 echo "♻️  Restarting containers..."
-docker-compose down
-docker-compose up -d
+docker compose down
+docker compose up -d
 
 echo "✅ Deployment complete!"
 echo "🌐 Application should be available at https://lettermaker.tk.sg"
 echo ""
-echo "📝 Check logs with: docker-compose logs -f"
-echo "🔍 Check status with: docker-compose ps"
+echo "📝 Check logs with: docker compose logs -f"
+echo "🔍 Check status with: docker compose ps"
