@@ -1,6 +1,6 @@
 # Letter Matrix Portal
 
-A lightweight Express + TypeScript service that takes placeholder values from a simple web form, merges them into an exported HTML letter template, and emails the finished PDF back to the author.
+A lightweight Express + TypeScript service that merges submitted data into a Google Docs template, exports the result as PDF, and emails it back to the requester.
 
 ## Quick start
 
@@ -8,15 +8,24 @@ A lightweight Express + TypeScript service that takes placeholder values from a 
    ```bash
    npm install
    ```
-2. **Configure environment variables**
-   - Duplicate `.env.example` (or create `.env`) with the following keys:
+2. **Prepare Google Cloud**
+   - Create or pick a Google Cloud project.
+   - Enable the **Google Docs API** and **Google Drive API** for that project.
+   - Create a **service account** and generate a JSON key. Keep the key safe.
+   - Share your Google Docs template with the service account email, granting at least Editor access.
+3. **Configure environment variables**
+   - Duplicate `.env.example` (or create `.env`) and supply:
      - `RESEND_API_KEY` – API key from [Resend](https://resend.com/) for email delivery.
      - `EMAIL_FROM` – Verified sender address (e.g. `figmaletter@tinkertanker.com`).
-     - `TEMPLATE` – Name of the Word template (without extension) placed in `templates/`.
-3. **Provide your template**
-   - Export your Word document as filtered HTML (`File → Save As → Web Page, Filtered`).
-   - Drop the generated `<TEMPLATE>.html` file (and its accompanying asset folder) into `templates/`.
-   - Keep the placeholder token `<<name>>` where you want the recipient’s name to appear.
+     - `GOOGLE_TEMPLATE_DOCUMENT_ID` – The ID portion from your template’s Google Docs URL.
+     - Either set `GOOGLE_APPLICATION_CREDENTIALS` to the JSON key path **or** provide all of:
+       - `GOOGLE_CLIENT_EMAIL`
+       - `GOOGLE_PRIVATE_KEY` (replace literal `\n` with real new lines)
+       - `GOOGLE_PROJECT_ID` (optional but recommended)
+     - Optional helpers:
+       - `GOOGLE_IMPERSONATED_USER` – Delegated Workspace user email if you are using domain-wide delegation.
+       - `GOOGLE_OUTPUT_FOLDER_ID` – Folder to store the temporary draft before it is deleted.
+       - `GOOGLE_SHARED_DRIVE_ID` – Required if the template or folder lives on a shared drive.
 4. **Run the development server**
    ```bash
    npm run dev
@@ -25,34 +34,32 @@ A lightweight Express + TypeScript service that takes placeholder values from a 
 5. **Generate a PDF**
    - Open the portal in your browser.
    - Provide the recipient’s name and email user ID (everything before `@tinkertanker.com`).
-   - Hit “Generate PDF” to email the merged document—`<<name>>` will be replaced automatically.
-
-## Scripts
-
-- `npm run dev` – Start the Express server with live TypeScript reloading via `tsx`.
-- `npm run build` – Type-check and emit JavaScript into `dist/`.
-- `npm start` – Run the compiled server (after `npm run build`).
-- `npm test` – Placeholder; feel free to swap for your preferred test command.
+   - Supply any extra placeholder fields required by your template.
+   - Hit “Generate PDF” to receive the merged document by email.
 
 ## How it works
 
-1. **Templating** – The backend loads the exported HTML, swaps in the submitted name for `<<name>>`, and stitches in local assets with a `<base>` tag.
-2. **Rendering** – The HTML is rendered directly to PDF by a headless Chromium instance supplied by Puppeteer, preserving the visual layout from Word.
-3. **Delivery** – The PDF is emailed via Resend to `<user>@tinkertanker.com` using the configured sender.
+1. **Copy** – Each request duplicates the Google Docs template into a temporary document (optionally inside a specific folder or shared drive).
+2. **Merge** – The service replaces placeholders such as `{{NAME}}`, `{{ NAME }}`, `<<NAME>>`, or `[[NAME]]` with the submitted values. The special token `{{DOCUMENT_TITLE}}` receives the requested title.
+3. **Export** – Google Drive exports the filled document to PDF.
+4. **Clean up** – The temporary Google Doc is deleted to avoid clutter.
+5. **Deliver** – The PDF is attached to an email sent via Resend to `<user>@tinkertanker.com`.
 
 ## Operational notes
 
-- The first PDF generation spins up Chromium; expect the initial request to take a little longer while the browser warms up.
-- `templates/<TEMPLATE>.html` is cached after the first read. Replace the file and restart the server to refresh the cache.
-- If Puppeteer struggles to launch on your platform, set the `PUPPETEER_EXECUTABLE_PATH` environment variable to a locally installed Chromium/Chrome binary before starting the server.
-- The front end lets authors add or remove placeholder rows so they can align perfectly with whichever game-specific copy they fancy.
+- Share the template (and optional output folder) with the service account, otherwise Google Drive returns `404` during copy or export.
+- `GOOGLE_PRIVATE_KEY` must contain real newline characters. Replace any escaped `\n` with actual line breaks in `.env`.
+- Set `GOOGLE_IMPERSONATED_USER` if the service account needs to act on behalf of a Workspace user to access shared content.
+- The request body fields become placeholders. For example, posting `{ name: "Felicia", team: "Spark" }` lets you place `{{name}}` and `{{team}}` in the document.
+- Attachments are base64-encoded automatically before Resend receives them.
 
 ## Troubleshooting
 
-- **Template missing** – You will see a “Template file not found” message if the configured HTML template is absent. Double-check the location (including the asset folder) and name, then restart the server.
-- **Rendering errors** – Docxtemplater throws descriptive validation errors when it encounters malformed placeholders (e.g. `{{#loops}}` without an `{{/loops}}`). Those bubble back to the browser so writers can adjust the Word template.
-- **Email delivery** – If emails fail to send, confirm that `RESEND_API_KEY` and `EMAIL_FROM` are present in `.env`, and that the sender is verified in Resend.
-- **Chromium download** – `npm install` downloads a compatible Chromium build automatically. If your network blocks that, fetch the binary manually and point Puppeteer at it using `PUPPETEER_EXECUTABLE_PATH`.
+- **Template missing** – A `Template document is missing or inaccessible` error usually means the Doc ID is wrong or the service account lacks access. Confirm sharing permissions and the document URL.
+- **Credentials incomplete** – If you see `Google service account credentials are not fully configured`, ensure either `GOOGLE_APPLICATION_CREDENTIALS` is set or all discrete credential vars are present.
+- **Placeholder unchanged** – Check that the placeholder text matches one of the recognised patterns (`{{KEY}}`, `{{ KEY }}`, `<<KEY>>`, `[[KEY]]`). The match is case-sensitive.
+- **PDF export fails** – Verify the Drive API is enabled and, for shared drives, include `GOOGLE_SHARED_DRIVE_ID` (and ensure the service account has Content Manager or higher access).
+- **Email delivery** – If emails fail to send, confirm `RESEND_API_KEY` and `EMAIL_FROM` are set and the sender address is verified in Resend.
 
 ## Folder structure
 
@@ -61,13 +68,11 @@ letter-maker/
 ├── public/              # Static assets powering the HTML form
 ├── src/
 │   ├── services/
-│   │   └── matrix.ts    # Core merge + conversion logic
+│   │   └── matrix.ts    # Google Docs merge + export service
 │   └── server.ts        # Express bootstrap and routes
-├── templates/
-│   ├── <template>.html  # Exported HTML template (not committed)
-│   └── <template>.fld/  # Asset folder generated by Word (not committed)
-├── types/               # Ambient type declarations
+├── templates/           # Legacy Word exports (no longer used at runtime)
+├── dist/                # Compiled output (after `npm run build`)
 └── README.md
 ```
 
-Ho say bo? If all that sounds good, you are ready to let the matrix crank out letters on demand.
+Ho say bo? Once the variables are in place, the portal lets Google Docs handle the gnarly DOCX rendering while we just deliver the polished PDF.
