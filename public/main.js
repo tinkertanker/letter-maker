@@ -3,6 +3,7 @@ const statusEl = document.getElementById("status");
 const submitBtn = document.getElementById("submit-btn");
 const nameInput = document.getElementById("name");
 const emailUserIdInput = document.getElementById("emailUserId");
+const statusSpinner = document.getElementById("status-spinner");
 
 const statusVariants = {
   info: "primary",
@@ -10,11 +11,16 @@ const statusVariants = {
   error: "danger"
 };
 
-function showStatus(message, tone = "info") {
+function showStatus(message, tone = "info", showSpinner = false) {
   if (!statusEl) return;
   statusEl.variant = statusVariants[tone] ?? "neutral";
   statusEl.textContent = message;
   statusEl.open = true;
+
+  // Show or hide spinner
+  if (statusSpinner) {
+    statusSpinner.style.display = showSpinner ? "block" : "none";
+  }
 }
 
 function clearStatus() {
@@ -22,14 +28,16 @@ function clearStatus() {
   statusEl.open = false;
   statusEl.textContent = "";
   statusEl.variant = "neutral";
+  if (statusSpinner) {
+    statusSpinner.style.display = "none";
+  }
 }
 
 function toggleLoading(isLoading) {
   if (!submitBtn) return;
   submitBtn.disabled = isLoading;
-  if ("loading" in submitBtn) {
-    submitBtn.loading = isLoading;
-  }
+  // Change button text instead of showing spinner
+  submitBtn.textContent = isLoading ? "Please hold on..." : "Generate PDF";
 }
 
 async function handleSubmit(event) {
@@ -56,7 +64,11 @@ async function handleSubmit(event) {
   }
 
   toggleLoading(true);
-  showStatus("Preparing your document…", "info");
+  showStatus(
+    "Preparing your document... this can take a minute.",
+    "info",
+    true
+  ); // Show spinner
 
   try {
     const response = await fetch("/api/generate", {
@@ -80,13 +92,17 @@ async function handleSubmit(event) {
     }
 
     const recipient = payload?.to || `${emailUserId}@tinkertanker.com`;
-    showStatus(`Your document is on its way to ${recipient}.`, "success");
+    showStatus(
+      `Your document is on its way to ${recipient}.`,
+      "success",
+      false
+    ); // No spinner
     form.reset();
   } catch (error) {
     console.error(error);
     const message =
       error instanceof Error ? error.message : "An unexpected error occurred.";
-    showStatus(message, "error");
+    showStatus(message, "error", false); // No spinner
   } finally {
     toggleLoading(false);
   }
