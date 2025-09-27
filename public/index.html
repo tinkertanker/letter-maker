@@ -1,48 +1,37 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Letter Matrix</title>
+  <title>Letter Maker</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.11.1/cdn/themes/light.css" integrity="sha384-7gCX+KIw1WcSwCFt53YC+d8NhbOnecoYHx0eVb9mFZCHqF28Wor6H62ttQjrqVxT" crossorigin="anonymous" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" />
   <link rel="stylesheet" href="./styles.css" />
+  <script type="module" src="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.11.1/cdn/shoelace-autoloader.js" integrity="sha384-WxrUTk+6TP+EKZmnGwsWrHGjxcj56zUyTkvFsL8Z0P2MUbuyOIcE+1W/KFKJbC1w" crossorigin="anonymous"></script>
 </head>
-
 <body>
-  <main class="container">
-    <header class="page-header">
-      <h1>Letter generator</h1>
-      <p class="lead">
-        Please fill in your full name and email to receive your personalised PDF letter.
-      </p>
-    </header>
-
-    <form id="matrix-form" novalidate>
-      <fieldset>
-        <legend>Recipient</legend>
-        <label class="field">
-          <span>Name</span>
-          <input type="text" id="name" name="name" placeholder="Player One" required />
-        </label>
-        <label class="field email-field">
-          <span>Email user ID</span>
-          <div class="email-input">
-            <input type="text" id="emailUserId" name="emailUserId" placeholder="player.one" pattern="[a-z0-9._%+-]+"
-              required />
-            <span class="suffix">@tinkertanker.com</span>
-          </div>
-        </label>
-      </fieldset>
-
-      <div class="form-actions">
-        <button type="submit" id="submit-btn">Generate PDF</button>
+  <main class="layout">
+    <sl-card class="form-card">
+      <div slot="header" class="card-header">
+        <h1>Letter Maker</h1>
+        <p>Provide your name and email so we can send your personalised PDF letter.</p>
       </div>
-    </form>
 
-    <section id="status" role="status" aria-live="polite"></section>
+      <form id="letter-form" class="form-grid" novalidate>
+        <sl-input id="name" name="name" label="Full name" placeholder="Jamie Tan" autocomplete="name" required></sl-input>
+        <sl-input id="emailUserId" name="emailUserId" label="Email user ID" placeholder="jamie.tan" pattern="[a-z0-9._%+-]+" autocapitalize="none" autocorrect="off" required>
+          <span slot="suffix">@tinkertanker.com</span>
+          <small slot="help-text">We will append @tinkertanker.com automatically.</small>
+        </sl-input>
+        <div class="actions">
+          <sl-button variant="primary" type="submit" id="submit-btn">Generate PDF</sl-button>
+        </div>
+      </form>
+
+      <sl-alert id="status" class="status" variant="neutral" closable></sl-alert>
+    </sl-card>
   </main>
 
   <script src="./main.js" type="module"></script>
 </body>
-
 </html>

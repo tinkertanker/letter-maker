@@ -90,7 +90,8 @@ app.post('/api/generate', async (req, res, next) => {
     }
 
     const targetEmail = `${validatedUserId}@${EMAIL_DOMAIN}`;
-    const downloadName = normaliseFilename(fileName || title || validatedName);
+    const outputLabelBase = fileName || title || validatedName;
+    const downloadName = normaliseFilename(`Generated - ${outputLabelBase}`);
 
     const templateData: Record<string, unknown> = { name: validatedName };
     if (data && typeof data === 'object' && !Array.isArray(data)) {
@@ -102,9 +103,9 @@ app.post('/api/generate', async (req, res, next) => {
 
     const subjectLine = title ? `Your ${title} PDF` : 'Your generated PDF';
     const htmlBody = `
-      <p>Hi ${validatedName},</p>
-      <p>Your personalised PDF is ready. It is attached to this message.</p>
-      <p>Cheers,<br />Letter Matrix</p>
+      <p>Hello ${validatedName},</p>
+      <p>Your personalised PDF letter is ready. It is attached to this email.</p>
+      <p>Best regards,<br />Letter Maker</p>
     `;
 
     await resend.emails.send({
@@ -121,7 +122,7 @@ app.post('/api/generate', async (req, res, next) => {
     });
 
     res.json({
-      message: 'PDF dispatched via email, ho say bo!',
+      message: `PDF sent to ${targetEmail}.`,
       to: targetEmail,
       fileName: downloadName,
     });

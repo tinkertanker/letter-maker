@@ -1,41 +1,59 @@
-const form = document.getElementById('matrix-form');
+const form = document.getElementById('letter-form');
 const statusEl = document.getElementById('status');
 const submitBtn = document.getElementById('submit-btn');
 const nameInput = document.getElementById('name');
 const emailUserIdInput = document.getElementById('emailUserId');
 
-function setStatus(message, type) {
+const statusVariants = {
+  info: 'primary',
+  success: 'success',
+  error: 'danger',
+};
+
+function showStatus(message, tone = 'info') {
+  if (!statusEl) return;
+  statusEl.variant = statusVariants[tone] ?? 'neutral';
   statusEl.textContent = message;
-  statusEl.className = type || '';
+  statusEl.open = true;
 }
 
 function clearStatus() {
+  if (!statusEl) return;
+  statusEl.open = false;
   statusEl.textContent = '';
-  statusEl.className = '';
+  statusEl.variant = 'neutral';
+}
+
+function toggleLoading(isLoading) {
+  if (!submitBtn) return;
+  submitBtn.disabled = isLoading;
+  if ('loading' in submitBtn) {
+    submitBtn.loading = isLoading;
+  }
 }
 
 async function handleSubmit(event) {
   event.preventDefault();
   clearStatus();
 
-  const name = nameInput.value.trim();
-  const emailUserId = emailUserIdInput.value.trim().toLowerCase();
+  const name = nameInput?.value.trim() ?? '';
+  const emailUserId = emailUserIdInput?.value.trim().toLowerCase() ?? '';
 
   if (!name) {
-    setStatus('Name cannot be empty, bro.', 'error');
-    nameInput.focus();
+    showStatus('Please enter a name.', 'error');
+    nameInput?.focus({ preventScroll: true });
     return;
   }
 
   const emailPattern = /^[a-z0-9._%+-]{1,64}$/;
   if (!emailPattern.test(emailUserId)) {
-    setStatus('Email user ID must be alphanumeric and before the @, knn.', 'error');
-    emailUserIdInput.focus();
+    showStatus('Please provide a valid email user ID (letters, numbers, and . _ % + - are allowed).', 'error');
+    emailUserIdInput?.focus({ preventScroll: true });
     return;
   }
 
-  submitBtn.disabled = true;
-  setStatus('Warming up the matrix, please hold…');
+  toggleLoading(true);
+  showStatus('Preparing your PDF…', 'info');
 
   try {
     const response = await fetch('/api/generate', {
@@ -48,7 +66,7 @@ async function handleSubmit(event) {
     try {
       payload = await response.json();
     } catch (parseError) {
-      // ignore
+      // Ignore JSON parse issues so we can fall back to generic errors.
     }
 
     if (!response.ok) {
@@ -57,14 +75,15 @@ async function handleSubmit(event) {
     }
 
     const recipient = payload?.to || `${emailUserId}@tinkertanker.com`;
-    setStatus(`PDF emailed to ${recipient}. Ho say bo!`, 'success');
+    showStatus(`Your PDF is on its way to ${recipient}.`, 'success');
+    form.reset();
   } catch (error) {
     console.error(error);
-    const message = error instanceof Error ? error.message : 'Unexpected error occurred.';
-    setStatus(`Wah knn, ${message}`, 'error');
+    const message = error instanceof Error ? error.message : 'An unexpected error occurred.';
+    showStatus(message, 'error');
   } finally {
-    submitBtn.disabled = false;
+    toggleLoading(false);
   }
 }
 
-form.addEventListener('submit', handleSubmit);
+form?.addEventListener('submit', handleSubmit);
