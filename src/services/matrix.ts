@@ -258,6 +258,3 @@ export async function generatePdf(data: Record<string, unknown>, title?: string)
   }
 }
 
-export async function shutdownBrowser(): Promise<void> {
-  // No browser to shut down when using Google Docs rendering.
-}

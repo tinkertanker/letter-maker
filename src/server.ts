@@ -7,7 +7,6 @@ import {
   RenderingError,
   TemplateMissingError,
   generatePdf,
-  shutdownBrowser,
 } from './services/matrix';
 import { Resend } from 'resend';
 
@@ -155,18 +154,4 @@ app.use((err: Error, _req: express.Request, res: express.Response, _next: expres
 
 app.listen(PORT, () => {
   console.log(`Server listening on http://localhost:${PORT}`);
-});
-
-const terminationSignals: NodeJS.Signals[] = ['SIGINT', 'SIGTERM'];
-for (const signal of terminationSignals) {
-  process.on(signal, async () => {
-    await shutdownBrowser();
-    process.exit(0);
-  });
-}
-
-process.on('exit', () => {
-  shutdownBrowser().catch((error) => {
-    console.error('Error shutting down browser', error);
-  });
 });
