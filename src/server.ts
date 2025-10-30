@@ -89,8 +89,7 @@ app.post('/api/generate', async (req, res, next) => {
     }
 
     const targetEmail = `${validatedUserId}@${EMAIL_DOMAIN}`;
-    const outputLabelBase = fileName || title || validatedName;
-    const downloadName = normaliseFilename(`Generated - ${outputLabelBase} - ${targetEmail}`);
+    const downloadName = normaliseFilename(`Letter for ${validatedName}`);
 
     const templateData: Record<string, unknown> = { name: validatedName };
     if (data && typeof data === 'object' && !Array.isArray(data)) {
