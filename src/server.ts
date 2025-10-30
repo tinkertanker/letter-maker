@@ -98,6 +98,11 @@ app.post('/api/generate', async (req, res, next) => {
       Object.assign(templateData, data);
     }
     templateData.email = templateData.email ?? targetEmail;
+    templateData.date = templateData.date ?? new Date().toLocaleDateString('en-GB', {
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric'
+    });
 
     const pdfBuffer = await generatePdf(templateData, title);
 
